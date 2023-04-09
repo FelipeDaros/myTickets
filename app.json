@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "myTickets",
+    "slug": "myTickets",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
