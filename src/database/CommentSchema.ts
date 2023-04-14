@@ -1,12 +1,11 @@
-export const TicketSchema = {
-  name: 'Ticket',
+export const CommentSchema = {
+  name: 'Comment',
   properties: {
     _id: 'string',
-    title: 'string',
+    message: 'string',
     description: 'string',
     status: 'string',
     createdAt: 'date',
-    comments: 'Comment[]?'
   },
   primaryKey: '_id',
 };

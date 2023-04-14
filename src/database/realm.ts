@@ -5,11 +5,11 @@ import { TicketSchema } from "./TicketSchema"
 
 const getRealm = async () =>
   await Realm.open({
-    path: "maxipas-app",
+    path: "ticket-1",
     schema: [
       TicketSchema
     ],
-    schemaVersion: 2,
+    schemaVersion: 4,
   });
 
 export {getRealm};

@@ -12,9 +12,9 @@ export function Routes() {
     <Box flex={1} bg="muted.800">
       <NavigationContainer>
         <Navigator screenOptions={{headerShown: false}}>
-          <Screen name="CriarTicket" component={CriarTicket} />
-          <Screen name="EmAberto" component={EmAberto} />
           <Screen name="Home" component={Home} />
+          <Screen name="EmAberto" component={EmAberto} />
+          <Screen name="CriarTicket" component={CriarTicket} />
         </Navigator>
       </NavigationContainer>
     </Box>

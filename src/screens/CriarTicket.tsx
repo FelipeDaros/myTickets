@@ -1,4 +1,4 @@
-import {
+  import {
   Box,
   Center,
   Input,
@@ -21,24 +21,35 @@ export function CriarTicket() {
   async function teste() {
     setLoading(true);
     const realm = await getRealm();
-
     try {
       realm.write(() => {
-        realm.create('tickets', {
-          _id: uuid.v4,
+        realm.create('Ticket', {
+          _id: uuid.v4(),
           title,
           description,
           status: 'open',
-          createAt: Date.now(),
+          createdAt: new Date(),
         });
       });
-    } catch (error) {
       toast.show({
-        render: (error: any) => {
+        render: () => {
+          return (
+            <Box bg="success.600" px="2" py="1" rounded="lg" mb={5}>
+              <Text color="white" fontSize="md">
+                Ticket criado com sucesso!
+              </Text>
+            </Box>
+          );
+        },
+      });
+    } catch (error) {
+      let err = error;
+      toast.show({
+        render: () => {
           return (
             <Box bg="error.500" px="2" py="1" rounded="lg" mb={5}>
               <Text color="white" fontSize="md">
-                {error}
+                {err.message}
               </Text>
             </Box>
           );
