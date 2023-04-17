@@ -1,4 +1,5 @@
 import { Box, HStack, Pressable, Text, VStack } from 'native-base';
+import moment from 'moment';
 
 type Props = {
   item: {
@@ -27,7 +28,7 @@ export function TicketCards({item, irPara}: Props) {
       >
         <HStack>
           <Box
-            bg={item.status === 'open' ? 'success.600' : 'amber.400'}
+            bg={item.status === 'closed' ? 'amber.400' : 'success.600'}
             w="1"
             h="16"
             rounded="sm"
@@ -43,7 +44,7 @@ export function TicketCards({item, irPara}: Props) {
             fontWeight="light"
             fontFamily="body"
             fontSize={8}
-          ></Text>
+          >{moment(item.createdAt).format('lll')}</Text>
         </HStack>
       </VStack>
     </Pressable>

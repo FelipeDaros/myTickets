@@ -3,7 +3,7 @@ export declare global{
     interface RootParamList{
       Home: undefined;
       CriarTicket: undefined;
-      EmAberto: {
+      TicketSelecionado: {
         ticketId: string;
       }
     }

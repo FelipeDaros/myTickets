@@ -1,10 +1,11 @@
-export const CommentSchema = {
+import {ObjectSchema} from 'realm'
+export const CommentSchema:ObjectSchema  = {
   name: 'Comment',
   properties: {
-    _id: 'string',
+    _id: {type: 'string', indexed: true},
     message: 'string',
-    description: 'string',
-    status: 'string',
+    status: 'bool',
+    ticketId: {type: 'string', indexed: true},
     createdAt: 'date',
   },
   primaryKey: '_id',

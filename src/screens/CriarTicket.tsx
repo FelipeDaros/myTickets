@@ -11,16 +11,25 @@ import { CustomButton } from '../components/CustomButton';
 import { useState } from 'react';
 import { getRealm } from '../database/realm';
 import uuid from 'react-native-uuid';
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export function CriarTicket() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const navigate = useNavigation();
 
   async function teste() {
     setLoading(true);
     const realm = await getRealm();
+
+    if(!title || !description){
+      Alert.alert('Título ou a descrição está vazio.');
+      return;
+    }
+
     try {
       realm.write(() => {
         realm.create('Ticket', {
@@ -28,13 +37,13 @@ export function CriarTicket() {
           title,
           description,
           status: 'open',
-          createdAt: new Date(),
+          createdAt: new Date()
         });
       });
       toast.show({
         render: () => {
           return (
-            <Box bg="success.600" px="2" py="1" rounded="lg" mb={5}>
+            <Box bg="success.600" px="2" py="1" rounded="sm" mb={5}>
               <Text color="white" fontSize="md">
                 Ticket criado com sucesso!
               </Text>
@@ -42,6 +51,7 @@ export function CriarTicket() {
           );
         },
       });
+      navigate.goBack();
     } catch (error) {
       let err = error;
       toast.show({
@@ -139,6 +149,7 @@ export function CriarTicket() {
           }}
           title="Cadastrar"
           backgroundColor="success.600"
+          desativado={!title || !description}
         />
       </Box>
     </VStack>

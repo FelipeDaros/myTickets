@@ -5,8 +5,9 @@ import { TicketCards } from '../components/TicketCards';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getRealm } from '../database/realm';
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { Alert, FlatList } from 'react-native';
 import Realm from 'realm';
+import Loading from '../components/Loading';
 
 type Ticket = {
   _id: string;
@@ -20,25 +21,38 @@ interface TicketObjetoRealm extends Realm.Object<Ticket>, Ticket {}
 
 export function Home() {
   const [tickets, setTickets] = useState<TicketObjetoRealm[]>([]);
-  const [filters, setFilters] = useState();
+  const [filters, setFilters] = useState<string>();
   const [loading, setLoading] = useState(true);
+  const [selecionado, setSelecionado] = useState(false);
   const navigation = useNavigation();
 
-  async function listarTickets() {
+  async function listarTickets(status?: string){
     setLoading(true);
     const realm = await getRealm();
-
+    let tickets: TicketObjetoRealm[];
     try {
-      const tickets: Array<TicketObjetoRealm> = realm
-        .objects('Ticket')
+      tickets = realm
+        .objects<TicketObjetoRealm[]>('Ticket')
         .toJSON();
+
+
+      if(status){
+        tickets = tickets.filter(ticket => ticket.status === status);
+      }
+
       setTickets(tickets);
     } catch (error) {
-      console.log(error);
+      Alert.alert(error.message);
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if(filters){
+      listarTickets(filters);
+    }
+  }, [filters])
 
   useFocusEffect(
     useCallback(() => {
@@ -47,51 +61,63 @@ export function Home() {
   );
 
   function ticketSelected(ticketId: string) {
-    navigation.navigate('EmAberto', { ticketId });
+    navigation.navigate('TicketSelecionado', { ticketId });
   }
 
   return (
-    <VStack bg="muted.800" flex={1}>
-      <Text
-        alignSelf="center"
-        mt="10"
-        color="white"
-        fontFamily="heading"
-        fontSize="title"
-      >
-        TICKETS
-      </Text>
-      <HStack justifyContent="space-between" mx="16" mt="6">
-        <CustomButtonFilters
-          onChangeFilter={() => {}}
-          title="Em aberto"
-          backgroundColor="amber.400"
-        />
-        <CustomButtonFilters
-          onChangeFilter={() => {}}
-          title="Finalizados"
-          backgroundColor="success.600"
-        />
-      </HStack>
-      <VStack alignItems="center" mt="10">
-        <FlatList<TicketObjetoRealm>
-          data={tickets}
-          renderItem={({ item }) => (
-            <TicketCards item={item} irPara={() => {ticketSelected(item._id)}} />
-          )}
-          keyExtractor={(item) => item._id}
-          showsVerticalScrollIndicator={false}
-        />
-      </VStack>
-      <Box alignItems="center" mt="8">
-        <CustomButton
-          onChange={() => {
-            navigation.navigate('CriarTicket');
-          }}
-          title="Cadastrar"
-          backgroundColor="success.600"
-        />
-      </Box>
+    <>{loading ? <Loading /> : <VStack bg="muted.800" flex={1}>
+    <Text
+      alignSelf="center"
+      mt="10"
+      color="white"
+      fontFamily="heading"
+      fontSize="title"
+    >
+      TICKETS
+    </Text>
+    <HStack justifyContent="space-between" mx="16" mt="6">
+      <CustomButtonFilters
+        onChangeFilter={() => {setFilters('open')}}
+        title="Em aberto"
+        backgroundColor="success.600"
+      />
+      <CustomButtonFilters
+        onChangeFilter={() => {setFilters('closed')}}
+        title="Finalizados"
+        backgroundColor="amber.400"
+      />
+    </HStack>
+    <VStack alignItems="center" mt="10">
+      <FlatList<TicketObjetoRealm>
+        data={tickets}
+        renderItem={({ item }) => (
+          <TicketCards
+            item={item}
+            irPara={() => {
+              ticketSelected(item._id);
+            }}
+          />
+        )}
+        keyExtractor={(item) => item._id}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() =>
+          !tickets.length ? (
+            <Text fontFamily="heading" color="muted.600">
+              Não há tickets cadastrados
+            </Text>
+          ) : null
+        }
+      />
     </VStack>
+    <Box alignItems="center" mt="8">
+      <CustomButton
+        onChange={() => {
+          navigation.navigate('CriarTicket');
+        }}
+        title="Cadastrar"
+        backgroundColor="success.600"
+      />
+    </Box>
+  </VStack>}</>
   );
 }
